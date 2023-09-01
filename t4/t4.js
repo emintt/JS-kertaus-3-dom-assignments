@@ -1,3 +1,14 @@
+/* Open t4 folder in your IDE/editor. In the t4.js file, you will find an array
+ containing restaurant data, including their respective locations. The
+  objective of the application is to determine your current location. Then,
+   the application should sort the array of restaurants based on the distance
+    from the nearest to the farthest. Finally, the application should display
+     a list of restaurants in order, starting with the nearest and ending with
+      the farthest. This list should include the names and addresses of the
+       restaurants.
+You can use the formula for Euclidean distance from JS recap 1.2. It's not
+100% accurate, since earth is not actually flat, but for now it's close enough.
+5p */
 const restaurants = [
   {
     location: {type: 'Point', coordinates: [25.018456, 60.228982]},
@@ -771,3 +782,60 @@ const restaurants = [
 ];
 
 // your code here
+function laskeEtaisyys(x1, y1, x2, y2) {
+  const distance = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+  return distance;
+}
+
+// Options for retrieving location information (optional)
+const options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0
+};
+
+ // Function to be called if an error occurs while retrieving location information
+ function error(err) {
+  console.warn(`ERROR(${err.code}): ${err.message}`);
+}
+
+function success(pos) {
+  // Nykyinen sijainti
+  const crd = pos.coords;
+  const x1 = crd.latitude;
+  const y1 = crd.longitude;
+  // console.log(crd);
+  //taulukon järjestäminen
+  restaurants.sort(function(a, b) {
+    const x2A = a.location.coordinates[1]; //a = restaurants[0] // lat Y long X
+    const y2A = a.location.coordinates[0];
+    const etaisyysA = laskeEtaisyys(x1, y1, x2A, y2A);
+    // console.log(etaisyysA);
+
+    const x2B = b.location.coordinates[1];
+    const y2B = b.location.coordinates[0];
+    const etaisyysB = laskeEtaisyys(x1, y1, x2B, y2B);
+    // console.log(etaisyysB);
+
+    return etaisyysA - etaisyysB;
+  });
+
+  console.log(restaurants);
+
+  // tulosta ravintolat html dokumentiin
+  const table = document.querySelector('table');
+  for (const restautant of restaurants) {
+    const tr = document.createElement('tr');
+    const td1 = document.createElement('td');
+    const td2 = document.createElement('td');
+    td1.innerText = restautant.name;
+    td2.innerText = `${restautant.address}, ${restautant.postalCode}, ${restautant.city}`;
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    table.appendChild(tr);
+  }
+}
+// Starts the location search
+navigator.geolocation.getCurrentPosition(success, error, options);
+
+

@@ -1,3 +1,10 @@
+/* Open t5 folder in your IDE/editor. In the t5.js file, you will find
+an array containing restaurant data, including their respective locations.
+The objective of the application is to add restaurants on a Leaflet map as
+markers. When a marker is clicked, show the restaurants name and address.
+Name should be in <h3> element and address should be in <p> element.
+https://leafletjs.com/examples/quick-start/
+4p */
 const restaurants = [
   {
     location: {type: 'Point', coordinates: [25.018456, 60.228982]},
@@ -771,3 +778,17 @@ const restaurants = [
 ];
 
 // your code here
+// create map
+const map = L.map('map').setView([60.16, 24.93], 13);
+// add tile layer
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
+for (let restaurant of restaurants) {
+  const marker = L.marker([restaurant.location.coordinates[1], restaurant.location.coordinates[0]]).addTo(map);
+
+  marker.bindPopup(`<h3>${restaurant.name}</h3><p>${restaurant.address}, ${restaurant.postalCode}, ${restaurant.city}</p>`).openPopup();
+}
+
